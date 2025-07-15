@@ -84,6 +84,13 @@ read_marketdata <- function(meta) {
     cli::cli_alert_warning("File could not be read for meta {.strong {meta$download_checksum}}")
     return(invisible(meta))
   }
+
+  # Decompress gzipped files to a temp file before parsing
+  if (grepl("\\.gz$", filename)) {
+    tmpfile <- tempfile(fileext = ".xml")
+    R.utils::gunzip(filename, destname = tmpfile, overwrite = TRUE, remove = FALSE)
+    filename <- tmpfile
+  }
   
   template <- template_retrieve(meta$template)
   df <- read_file_wrapper(template, filename, meta)
