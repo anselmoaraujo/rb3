@@ -1,5 +1,6 @@
 skip_on_cran()
 skip_if_offline()
+skip_if_not_installed("vcr")
 
 if (Sys.info()["sysname"] == "Linux") {
   httr::set_config(httr::config(ssl_verifypeer = FALSE))
@@ -22,9 +23,9 @@ test_that("it should download a file with a datetime downloader", {
   expect_true(file.exists(dest))
 })
 
-test_that("it should defaults to PRE in curve_download", {
+test_that("it should download the reference rates (TS) file", {
   tpl <- template_retrieve("b3-reference-rates")
-  f <- template_download_marketdata(tpl, tempfile(), refdate = as.Date("2022-05-10"), curve_name = "PRE")
+  f <- template_download_marketdata(tpl, tempfile(), refdate = as.Date("2022-05-10"))
   expect_true(f)
 })
 

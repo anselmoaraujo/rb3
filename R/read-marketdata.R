@@ -57,10 +57,7 @@
 #' meta <- read_marketdata(meta)
 #' 
 #' # For reference rates
-#' meta <- template_meta_create_or_load("b3-reference-rates",
-#'   refdate = as.Date("2024-04-05"),
-#'   curve_name = "PRE"
-#' )
+#' meta <- template_meta_create_or_load("b3-reference-rates", refdate = as.Date("2024-04-05"))
 #' # Download using the metadata
 #' meta <- download_marketdata(meta)
 #' meta <- read_marketdata(meta)
@@ -83,6 +80,13 @@ read_marketdata <- function(meta) {
   if (!file.exists(filename)) {
     cli::cli_alert_warning("File could not be read for meta {.strong {meta$download_checksum}}")
     return(invisible(meta))
+  }
+
+  # Decompress gzipped files to a temp file before parsing
+  if (grepl("\\.gz$", filename)) {
+    tmpfile <- tempfile(fileext = ".xml")
+    R.utils::gunzip(filename, destname = tmpfile, overwrite = TRUE, remove = FALSE)
+    filename <- tmpfile
   }
   
   template <- template_retrieve(meta$template)
